@@ -1,0 +1,49 @@
+name: Netlen'e Yayınla
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: netlen-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Derle ve yayınla
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Kaynağı al
+        uses: actions/checkout@v6
+
+      - name: Node.js hazırla
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: Üretim çıktısını oluştur
+        run: npm run build
+
+      - name: Netlen'e yükle
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.NETLEN_FTP_SERVER }}
+          username: ${{ secrets.NETLEN_FTP_USERNAME }}
+          password: ${{ secrets.NETLEN_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./out/
+          server-dir: ${{ secrets.NETLEN_FTP_SERVER_DIR }}
+          state-name: .satgital-deploy-state.json
+          dangerous-clean-slate: false
+          log-level: minimal
