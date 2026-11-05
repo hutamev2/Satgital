@@ -1,0 +1,25 @@
+import Link from "next/link";
+import { Grid3X3, Heart, Menu, Plus, UserRound } from "lucide-react";
+
+export function Header() {
+  return (
+    <header className="site-header">
+      <div className="container header-inner">
+        <Link className="brand" href="/" aria-label="Satgital ana sayfa">
+          satgital<span>.</span>
+        </Link>
+        <nav className="desktop-nav" aria-label="Ana menü">
+          <Link href="/ilanlar"><Grid3X3 size={18} /> Kategoriler</Link>
+          <Link href="/ilanlar">İlanlar</Link>
+          <Link href="/#nasil-calisir">Nasıl Çalışır?</Link>
+        </nav>
+        <div className="header-actions">
+          <Link className="icon-link desktop-only" href="/ilanlar" aria-label="Favorilerim"><Heart size={20} /></Link>
+          <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>
+          <Link className="primary-button header-cta" href="/ilan-ver"><Plus size={19} /> <span>Ücretsiz İlan Ver</span></Link>
+          <button className="mobile-menu" aria-label="Menüyü aç"><Menu /></button>
+        </div>
+      </div>
+    </header>
+  );
+}
