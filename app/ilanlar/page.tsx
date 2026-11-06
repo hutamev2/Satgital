@@ -1,8 +1,24 @@
+"use client";
+
 import { Filter, Search, SlidersHorizontal } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { ListingCard } from "@/components/ListingCard";
-import { categories, listings } from "@/lib/data";
+import { categories, listings as demoListings, type Listing } from "@/lib/data";
+import { fetchPublishedListings } from "@/lib/live-listings";
 
 export default function ListingsPage() {
+  const [liveListings, setLiveListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const listings = useMemo(() => [...liveListings, ...demoListings], [liveListings]);
+
+  useEffect(() => {
+    fetchPublishedListings()
+      .then(setLiveListings)
+      .catch((error) => setLoadError(error instanceof Error ? error.message : "İlanlar yüklenemedi."))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <main className="page-shell">
       <div className="container">
@@ -21,7 +37,8 @@ export default function ListingsPage() {
             <button className="primary-button full-button">Sonuçları göster</button>
           </aside>
           <section className="catalog-results">
-            <div className="result-bar"><strong>{listings.length} ilan</strong><select aria-label="Sıralama"><option>En yeni</option><option>Fiyat: düşükten yükseğe</option><option>Fiyat: yüksekten düşüğe</option></select></div>
+            <div className="result-bar"><strong>{loading ? "İlanlar yükleniyor..." : `${listings.length} ilan`}</strong><select aria-label="Sıralama"><option>En yeni</option><option>Fiyat: düşükten yükseğe</option><option>Fiyat: yüksekten düşüğe</option></select></div>
+            {loadError && <p className="upload-error" role="alert">Canlı ilanlar yüklenemedi: {loadError}</p>}
             <div className="listing-grid catalog-grid">{listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
           </section>
         </div>

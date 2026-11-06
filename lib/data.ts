@@ -8,6 +8,7 @@ export type Listing = {
   posted: string;
   image: string;
   description: string;
+  href?: string;
 };
 
 export const listings: Listing[] = [
