@@ -30,6 +30,7 @@ img { display: block; max-width: 100%; }
 .desktop-nav { display: flex; align-items: center; gap: 28px; font-size: 14px; font-weight: 650; }
 .desktop-nav a, .login-link, .icon-link { display: inline-flex; align-items: center; gap: 7px; transition: color .2s ease; }
 .desktop-nav a:hover, .login-link:hover { color: var(--blue); }
+.auth-button { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 .header-actions { margin-left: auto; display: flex; align-items: center; gap: 18px; }
 .primary-button, .secondary-button { border: 0; border-radius: 12px; min-height: 48px; padding: 0 20px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; font-weight: 750; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
 .primary-button { color: white; background: var(--blue); box-shadow: 0 9px 20px rgba(21, 94, 239, .21); }
