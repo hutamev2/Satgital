@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Grid3X3, Heart, Menu, Plus, UserRound } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
+import { AccountPanel } from "./AccountPanel";
 
 export function Header() {
   const [signedIn, setSignedIn] = useState(false);
   const [authReady, setAuthReady] = useState(false);
+  const [name, setName] = useState("Hesabım");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -18,6 +21,7 @@ export function Header() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSignedIn(Boolean(session?.user));
+      setName(session?.user.user_metadata.full_name || "Hesabım");
       setAuthReady(true);
     });
 
@@ -39,13 +43,14 @@ export function Header() {
         <div className="header-actions">
           <Link className="icon-link desktop-only" href="/ilanlar" aria-label="Favorilerim"><Heart size={20} /></Link>
           {authReady && (signedIn
-            ? <Link className="login-link" href="/ayarlar"><UserRound size={20} /> Ayarlar</Link>
+            ? <button className="login-link auth-button account-trigger" onClick={() => setOpen(true)} aria-haspopup="dialog"><UserRound size={20} /> {name}</button>
             : <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>
           )}
           <Link className="primary-button header-cta" href={authReady && !signedIn ? "/giris?reason=listing" : "/ilan-ver"}><Plus size={19} /> <span>Ücretsiz İlan Ver</span></Link>
           <button className="mobile-menu" aria-label="Menüyü aç"><Menu /></button>
         </div>
       </div>
+      {open && <AccountPanel name={name} onClose={() => setOpen(false)} />}
     </header>
   );
 }
