@@ -34,7 +34,7 @@ export function Header() {
     <header className="site-header">
       <div className="container header-inner">
         <Link className="brand" href="/" aria-label="Satgital ana sayfa">
-          satgital<span>.</span>
+          <img className="brand-logo" src="/brand/satgital-logo.png" width="859" height="216" alt="Satgital" />
         </Link>
         <nav className="desktop-nav" aria-label="Ana menü">
           <Link href="/ilanlar"><Grid3X3 size={18} /> Kategoriler</Link>
