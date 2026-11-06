@@ -47,7 +47,7 @@ export function Header() {
             ? <button className="login-link desktop-only auth-button" type="button" onClick={signOut}><UserRound size={20} /> Çıkış Yap</button>
             : <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>
           )}
-          <Link className="primary-button header-cta" href="/ilan-ver"><Plus size={19} /> <span>Ücretsiz İlan Ver</span></Link>
+          <Link className="primary-button header-cta" href={authReady && !signedIn ? "/giris?reason=listing" : "/ilan-ver"}><Plus size={19} /> <span>Ücretsiz İlan Ver</span></Link>
           <button className="mobile-menu" aria-label="Menüyü aç"><Menu /></button>
         </div>
       </div>

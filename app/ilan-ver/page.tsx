@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Building2, Camera, Car, Check, ChevronRight, Gamepad2, Home, ImagePlus, Info, Laptop, Search, Shirt, Smartphone, X } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
@@ -26,6 +26,7 @@ const readImage = (file: File) => new Promise<UploadImage>((resolve, reject) => 
 });
 
 export default function SellPage() {
+  const [authChecking, setAuthChecking] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const [selectedMain, setSelectedMain] = useState(categoryTree[0].id);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -35,6 +36,22 @@ export default function SellPage() {
   const [publishError, setPublishError] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (!supabase) {
+      window.location.replace("/giris/?reason=listing");
+      return;
+    }
+
+    void supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) {
+        window.location.replace("/giris/?reason=listing");
+        return;
+      }
+      setAuthChecking(false);
+    });
+  }, []);
   const activeMain = categoryTree.find((category) => category.id === selectedMain) ?? categoryTree[0];
   const searchResults = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("tr-TR");
@@ -98,6 +115,8 @@ export default function SellPage() {
       setPublishing(false);
     }
   };
+
+  if (authChecking) return <main className="page-shell auth-checking"><div className="auth-checking-card"><span className="auth-spinner" /><strong>Hesabın kontrol ediliyor...</strong></div></main>;
 
   return (
     <main className="page-shell sell-page">

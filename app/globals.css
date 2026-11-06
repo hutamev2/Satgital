@@ -302,6 +302,21 @@ input:focus, textarea:focus, select:focus { border-color: #8eb3f6; box-shadow: 0
 .auth-options label { display: flex; align-items: center; gap: 7px; }
 .auth-options a, .auth-switch a { color: var(--blue); font-weight: 750; }
 .auth-switch { text-align: center; font-size: 13px; }
+.auth-switch button { padding: 0; border: 0; color: var(--blue); background: transparent; font-weight: 750; cursor: pointer; }
+.site-notification { position: fixed; z-index: 100; right: 24px; bottom: 24px; width: min(390px, calc(100% - 32px)); padding: 16px; display: grid; grid-template-columns: 42px 1fr 26px; align-items: center; gap: 12px; border: 1px solid #bfd4fb; border-radius: 15px; background: white; box-shadow: 0 20px 55px rgba(11,25,53,.2); animation: notification-in .28s ease-out; }
+.site-notification > span { width: 42px; height: 42px; display: grid; place-items: center; color: var(--blue); border-radius: 12px; background: #eaf2ff; }
+.site-notification > span svg { width: 21px; }
+.site-notification div { min-width: 0; }
+.site-notification strong { display: block; margin-bottom: 3px; font-size: 13px; }
+.site-notification p { color: var(--muted); font-size: 12px; line-height: 1.4; }
+.site-notification button { width: 26px; height: 26px; padding: 0; display: grid; place-items: center; align-self: start; border: 0; border-radius: 7px; color: #7b879a; background: transparent; cursor: pointer; }
+.site-notification button:hover { background: var(--surface); }
+.site-notification button svg { width: 16px; }
+.auth-checking { display: grid; place-items: center; }
+.auth-checking-card { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 14px; }
+.auth-spinner { width: 24px; height: 24px; border: 3px solid #dbe6f7; border-top-color: var(--blue); border-radius: 50%; animation: auth-spin .7s linear infinite; }
+@keyframes notification-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes auth-spin { to { transform: rotate(360deg); } }
 
 @media (min-width: 1100px) {
   .listing-grid:not(.catalog-grid) { grid-template-columns: repeat(6, 1fr); }
@@ -396,6 +411,7 @@ input:focus, textarea:focus, select:focus { border-color: #8eb3f6; box-shadow: 0
   .selected-category-bar strong { align-items: flex-start; flex-wrap: wrap; }
   .category-continue { width: 100%; }
   .upload-preview-grid { grid-template-columns: repeat(2, 1fr); }
+  .site-notification { right: 16px; bottom: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
