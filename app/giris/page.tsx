@@ -23,7 +23,7 @@ export default function LoginPage() {
       const { error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/giris/` },
+        options: { emailRedirectTo: window.location.origin },
       });
       if (authError) setError(authError.message); else setMessage("Kayıt oluşturuldu. E-postandaki doğrulama bağlantısını aç.");
     } else {
