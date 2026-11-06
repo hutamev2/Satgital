@@ -24,11 +24,6 @@ export function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function signOut() {
-    const supabase = getSupabase();
-    if (!supabase) return;
-    await supabase.auth.signOut();
-  }
 
   return (
     <header className="site-header">
@@ -44,7 +39,7 @@ export function Header() {
         <div className="header-actions">
           <Link className="icon-link desktop-only" href="/ilanlar" aria-label="Favorilerim"><Heart size={20} /></Link>
           {authReady && (signedIn
-            ? <button className="login-link desktop-only auth-button" type="button" onClick={signOut}><UserRound size={20} /> Çıkış Yap</button>
+            ? <Link className="login-link" href="/ayarlar"><UserRound size={20} /> Ayarlar</Link>
             : <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>
           )}
           <Link className="primary-button header-cta" href={authReady && !signedIn ? "/giris?reason=listing" : "/ilan-ver"}><Plus size={19} /> <span>Ücretsiz İlan Ver</span></Link>
