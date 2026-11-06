@@ -59,6 +59,7 @@ export default function SellPage() {
   const ActiveIcon = activeMain.icon;
   const publishListing = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const values = new FormData(event.currentTarget);
     setPublishError("");
     const supabase = getSupabase();
     if (!supabase) { setPublishError("Supabase bağlantısı henüz yapılandırılmadı."); return; }
@@ -66,32 +67,36 @@ export default function SellPage() {
     if (!user) { setPublishError("İlan yayınlamak için önce giriş yapmalısın."); return; }
     if (!images.length) { setPublishError("En az bir ürün fotoğrafı eklemelisin."); return; }
     setPublishing(true);
-    const values = new FormData(event.currentTarget);
-    const { data: category, error: categoryError } = await supabase.from("categories").select("id").eq("name", selectedCategory).single();
-    if (categoryError || !category) { setPublishError("Kategori bulunamadı. Supabase kurulumu kontrol edilmeli."); setPublishing(false); return; }
-    const { data: listing, error: listingError } = await supabase.from("listings").insert({
-      seller_id: user.id,
-      category_id: category.id,
-      title: values.get("title"),
-      description: values.get("description"),
-      condition: values.get("condition"),
-      warranty: values.get("warranty"),
-      price: Number(values.get("price")),
-      city: values.get("city"),
-    }).select("id").single();
-    if (listingError || !listing) { setPublishError(listingError?.message ?? "İlan kaydedilemedi."); setPublishing(false); return; }
-    for (const [index, image] of images.entries()) {
-      const extension = image.file.name.split(".").pop()?.toLocaleLowerCase("tr-TR") || "jpg";
-      const objectPath = `${user.id}/${listing.id}/${crypto.randomUUID()}.${extension}`;
-      const { error: uploadFailure } = await supabase.storage.from("listing-images").upload(objectPath, image.file, { contentType: image.file.type });
-      if (uploadFailure) { setPublishError(`Fotoğraf yüklenemedi: ${uploadFailure.message}`); setPublishing(false); return; }
-      const { error: imageFailure } = await supabase.from("listing_images").insert({ listing_id: listing.id, owner_id: user.id, object_path: objectPath, sort_order: index });
-      if (imageFailure) { setPublishError(`Fotoğraf kaydı oluşturulamadı: ${imageFailure.message}`); setPublishing(false); return; }
+    try {
+      const { data: category, error: categoryError } = await supabase.from("categories").select("id").eq("name", selectedCategory).single();
+      if (categoryError || !category) { setPublishError("Kategori bulunamadı. Supabase kurulumu kontrol edilmeli."); return; }
+      const { data: listing, error: listingError } = await supabase.from("listings").insert({
+        seller_id: user.id,
+        category_id: category.id,
+        title: values.get("title"),
+        description: values.get("description"),
+        condition: values.get("condition"),
+        warranty: values.get("warranty"),
+        price: Number(values.get("price")),
+        city: values.get("city"),
+      }).select("id").single();
+      if (listingError || !listing) { setPublishError(listingError?.message ?? "İlan kaydedilemedi."); return; }
+      for (const [index, image] of images.entries()) {
+        const extension = image.file.name.split(".").pop()?.toLocaleLowerCase("tr-TR") || "jpg";
+        const objectPath = `${user.id}/${listing.id}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadFailure } = await supabase.storage.from("listing-images").upload(objectPath, image.file, { contentType: image.file.type });
+        if (uploadFailure) { setPublishError(`Fotoğraf yüklenemedi: ${uploadFailure.message}`); return; }
+        const { error: imageFailure } = await supabase.from("listing_images").insert({ listing_id: listing.id, owner_id: user.id, object_path: objectPath, sort_order: index });
+        if (imageFailure) { setPublishError(`Fotoğraf kaydı oluşturulamadı: ${imageFailure.message}`); return; }
+      }
+      const { error: publishFailure } = await supabase.from("listings").update({ status: "published", published_at: new Date().toISOString() }).eq("id", listing.id);
+      if (publishFailure) { setPublishError(publishFailure.message); return; }
+      setPublished(true);
+    } catch (error) {
+      setPublishError(error instanceof Error ? error.message : "İlan yayınlanırken beklenmeyen bir hata oluştu.");
+    } finally {
+      setPublishing(false);
     }
-    const { error: publishFailure } = await supabase.from("listings").update({ status: "published", published_at: new Date().toISOString() }).eq("id", listing.id);
-    if (publishFailure) { setPublishError(publishFailure.message); setPublishing(false); return; }
-    setPublishing(false);
-    setPublished(true);
   };
 
   return (
