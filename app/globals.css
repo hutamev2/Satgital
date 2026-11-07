@@ -27,10 +27,10 @@
 .account-wallet { display: flex; gap: 12px; align-items: center; margin-top: 22px; padding-top: 18px; border-top: 1px solid #ffffff35; }
 .account-wallet strong { font-size: 26px; }
 .account-tabs { display: grid; gap: 5px; padding: 8px; border: 1px solid var(--line); border-radius: 17px; background: white; }
-.account-tabs button, .account-settings { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px; border: 0; border-radius: 11px; background: transparent; font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; }
-.account-tabs button > span { flex: 1; }
-.account-tabs button > svg:first-child { color: var(--blue); }
-.account-tabs button.selected, .account-tabs button:hover { color: var(--blue); background: #edf4ff; }
+.account-tabs button, .account-tabs > a, .account-settings { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px; border: 0; border-radius: 11px; background: transparent; font-size: 13px; font-weight: 700; text-align: left; cursor: pointer; }
+.account-tabs button > span, .account-tabs > a > span { flex: 1; }
+.account-tabs button > svg:first-child, .account-tabs > a > svg:first-child { color: var(--blue); }
+.account-tabs button.selected, .account-tabs button:hover, .account-tabs > a:hover { color: var(--blue); background: #edf4ff; }
 .account-content { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
 .account-content h3 { font-size: 14px; margin: 0 0 12px; }
 .account-content p { font-size: 12px; line-height: 1.7; color: var(--muted); }
@@ -42,9 +42,44 @@
 .account-settings { border: 1px solid var(--line); background: white; }
 .account-settings svg:last-child { margin-left: auto; }
 .account-logout { margin-top: auto; min-height: 47px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid #f5cccc; border-radius:12px; color:#b42318; background:#fff4f3; cursor:pointer; font-weight:700; }
+.my-listings-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.my-listings-header .page-intro { margin-bottom: 0; }
+.my-listings-empty { margin-top: 34px; min-height: 300px; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; border: 1px dashed #b9c8dc; border-radius: 20px; color: var(--muted); background: white; text-align: center; }
+.my-listings-empty > svg { width: 48px; height: 48px; color: #91a4bd; }
+.my-listings-empty h2 { margin: 0; color: var(--ink); font-size: 21px; }
+.my-listings-empty p { margin: 0 0 8px; }
+.managed-listing-grid { margin-top: 34px; display: grid; gap: 18px; }
+.managed-listing-card { display: grid; grid-template-columns: 220px 1fr; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: white; box-shadow: 0 10px 28px rgba(11,25,53,.06); }
+.managed-listing-image { position: relative; min-height: 180px; display: grid; place-items: center; color: #91a4bd; background: #e9eef5; }
+.managed-listing-image img { width: 100%; height: 100%; object-fit: cover; }
+.managed-listing-image > svg { width: 44px; height: 44px; }
+.listing-status { position: absolute; left: 12px; top: 12px; padding: 7px 10px; border-radius: 999px; color: #344054; background: #fff; box-shadow: 0 5px 14px rgba(11,25,53,.13); font-size: 11px; font-weight: 800; }
+.status-published { color: #067866; background: #e7faf5; }
+.status-archived, .status-draft { color: #6b7280; background: #f3f4f6; }
+.status-sold { color: #175cd3; background: #eff8ff; }
+.managed-listing-body { min-width: 0; padding: 24px; display: grid; grid-template-columns: 1fr auto; align-content: center; gap: 18px 24px; }
+.managed-listing-body h2 { margin: 0 0 8px; font-size: 19px; }
+.managed-listing-body p { margin: 0; color: var(--muted); font-size: 12px; }
+.managed-listing-body > strong { color: var(--blue-dark); font-size: 21px; }
+.managed-listing-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 9px; padding-top: 16px; border-top: 1px solid var(--line); }
+.manage-button { min-height: 39px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--line); border-radius: 10px; background: white; cursor: pointer; font-size: 12px; font-weight: 750; }
+.manage-button svg { width: 16px; }
+.manage-button:hover { color: var(--blue); border-color: #a9c3ef; background: #f5f9ff; }
+.manage-button.danger { margin-left: auto; color: #b42318; border-color: #f3c7c3; background: #fff7f6; }
+.manage-button:disabled { opacity: .55; cursor: wait; }
 .account-trigger { max-width: 170px; font-weight: 700; }
 @keyframes account-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @media (max-width:540px) { .account-trigger { max-width:115px; font-size:12px; } .account-panel-inner { padding:18px; } }
+@media (max-width:700px) {
+  .my-listings-header { align-items: stretch; flex-direction: column; }
+  .my-listings-header > .primary-button { width: 100%; }
+  .managed-listing-card { grid-template-columns: 1fr; }
+  .managed-listing-image { min-height: 210px; aspect-ratio: 1.45; }
+  .managed-listing-body { padding: 18px; grid-template-columns: 1fr; }
+  .managed-listing-actions, .managed-listing-body > strong { grid-column: 1; }
+  .managed-listing-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .manage-button.danger { margin-left: 0; grid-column: 1 / -1; }
+}
 @media (prefers-reduced-motion:reduce) { .account-panel { animation:none; } }
 
 * { box-sizing: border-box; }
