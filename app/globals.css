@@ -54,6 +54,7 @@
 .listing-filters button.active { color: var(--blue-dark); background: white; box-shadow: 0 3px 10px rgba(11,25,53,.09); }
 .listing-filters span { min-width: 22px; height: 22px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; color: #61718a; background: #e6edf7; font-size: 11px; }
 .listing-filters button.active span { color: white; background: var(--blue); }
+.listing-filters.history-filter { pointer-events: none; }
 .my-listings-empty.filtered-empty { min-height: 230px; margin-top: 18px; }
 .managed-listing-grid { margin-top: 34px; display: grid; gap: 18px; }
 .listing-filters + .managed-listing-grid { margin-top: 18px; }
@@ -70,6 +71,8 @@
 .managed-listing-body p { margin: 0; color: var(--muted); font-size: 12px; }
 .managed-listing-body > strong { color: var(--blue-dark); font-size: 21px; }
 .managed-listing-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 9px; padding-top: 16px; border-top: 1px solid var(--line); }
+.history-complete { grid-column: 1 / -1; padding-top: 16px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); color: #067866; font-size: 13px; font-weight: 750; }
+.history-complete svg { width: 18px; }
 .manage-button { min-height: 39px; padding: 0 14px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--line); border-radius: 10px; background: white; cursor: pointer; font-size: 12px; font-weight: 750; }
 .manage-button svg { width: 16px; }
 .manage-button:hover { color: var(--blue); border-color: #a9c3ef; background: #f5f9ff; }
