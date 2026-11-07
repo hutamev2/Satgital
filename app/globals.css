@@ -48,7 +48,15 @@
 .my-listings-empty > svg { width: 48px; height: 48px; color: #91a4bd; }
 .my-listings-empty h2 { margin: 0; color: var(--ink); font-size: 21px; }
 .my-listings-empty p { margin: 0 0 8px; }
+.listing-filters { width: fit-content; margin-top: 34px; padding: 5px; display: flex; gap: 4px; border: 1px solid var(--line); border-radius: 14px; background: #f4f7fb; }
+.listing-filters button { min-height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 10px; color: var(--muted); background: transparent; cursor: pointer; font: inherit; font-size: 13px; font-weight: 750; transition: color .18s ease, background .18s ease, box-shadow .18s ease; }
+.listing-filters button:hover { color: var(--blue-dark); background: rgba(255,255,255,.72); }
+.listing-filters button.active { color: var(--blue-dark); background: white; box-shadow: 0 3px 10px rgba(11,25,53,.09); }
+.listing-filters span { min-width: 22px; height: 22px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; color: #61718a; background: #e6edf7; font-size: 11px; }
+.listing-filters button.active span { color: white; background: var(--blue); }
+.my-listings-empty.filtered-empty { min-height: 230px; margin-top: 18px; }
 .managed-listing-grid { margin-top: 34px; display: grid; gap: 18px; }
+.listing-filters + .managed-listing-grid { margin-top: 18px; }
 .managed-listing-card { display: grid; grid-template-columns: 220px 1fr; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: white; box-shadow: 0 10px 28px rgba(11,25,53,.06); }
 .managed-listing-image { position: relative; min-height: 180px; display: grid; place-items: center; color: #91a4bd; background: #e9eef5; }
 .managed-listing-image img { width: 100%; height: 100%; object-fit: cover; }
@@ -73,6 +81,8 @@
 @media (max-width:700px) {
   .my-listings-header { align-items: stretch; flex-direction: column; }
   .my-listings-header > .primary-button { width: 100%; }
+  .listing-filters { width: 100%; }
+  .listing-filters button { flex: 1; justify-content: center; padding: 0 10px; }
   .managed-listing-card { grid-template-columns: 1fr; }
   .managed-listing-image { min-height: 210px; aspect-ratio: 1.45; }
   .managed-listing-body { padding: 18px; grid-template-columns: 1fr; }
