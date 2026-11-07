@@ -6,6 +6,7 @@ create table public.admin_users (
 alter table public.admin_users enable row level security;
 revoke all on public.admin_users from anon, authenticated;
 grant select on public.admin_users to authenticated;
+grant select on public.profiles to authenticated;
 
 create policy admin_users_read_self on public.admin_users
   for select to authenticated

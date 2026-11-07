@@ -20,6 +20,13 @@ type AdminListing = {
 
 const statusLabels: Record<ListingStatus, string> = { draft: "Taslak", published: "Aktif", sold: "Satıldı", archived: "Pasif" };
 
+function formatSupabaseError(value: unknown, fallback: string) {
+  if (!value || typeof value !== "object") return fallback;
+  const error = value as { code?: string; message?: string; hint?: string };
+  const parts = [error.code, error.message, error.hint].filter(Boolean);
+  return parts.length ? parts.join(" · ") : fallback;
+}
+
 export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -48,8 +55,11 @@ export default function AdminPage() {
         supabase.from("listings").select("id,title,price,city,status,seller_display_name,created_at,listing_images(object_path,sort_order)").order("created_at", { ascending: false }),
         supabase.from("profiles").select("id", { count: "exact", head: true }),
       ]);
-      if (listingResult.error) throw listingResult.error;
-      if (profileResult.error) throw profileResult.error;
+      if (listingResult.error) {
+        setError(`İlanlar yüklenemedi: ${formatSupabaseError(listingResult.error, "Bilinmeyen veritabanı hatası")}`);
+        return;
+      }
+      if (profileResult.error) setNotice(`Kullanıcı sayacı alınamadı: ${formatSupabaseError(profileResult.error, "Yetki hatası")}`);
       const rows = (listingResult.data ?? []) as unknown as Omit<AdminListing, "imageUrl">[];
       const mapped = await Promise.all(rows.map(async (listing) => {
         const path = [...(listing.listing_images ?? [])].sort((a, b) => a.sort_order - b.sort_order)[0]?.object_path;
@@ -58,9 +68,9 @@ export default function AdminPage() {
         return { ...listing, imageUrl: data?.signedUrl ?? null };
       }));
       setListings(mapped);
-      setUserCount(profileResult.count ?? 0);
+      setUserCount(profileResult.error ? 0 : profileResult.count ?? 0);
     } catch (dashboardError) {
-      setError(dashboardError instanceof Error ? dashboardError.message : "Yönetim verileri yüklenemedi.");
+      setError(formatSupabaseError(dashboardError, "Yönetim verileri yüklenemedi."));
     } finally { setLoading(false); }
   }
 
