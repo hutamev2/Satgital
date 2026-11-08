@@ -41,7 +41,7 @@ export function Header() {
           <Link href="/#nasil-calisir">Nasıl Çalışır?</Link>
         </nav>
         <div className="header-actions">
-          <Link className="icon-link desktop-only" href="/ilanlar" aria-label="Favorilerim"><Heart size={20} /></Link>
+          <Link className="icon-link desktop-only" href="/favorilerim" aria-label="Favorilerim"><Heart size={20} /></Link>
           {authReady && (signedIn
             ? <button className="login-link auth-button account-trigger" onClick={() => setOpen(true)} aria-haspopup="dialog"><UserRound size={20} /> {name}</button>
             : <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>

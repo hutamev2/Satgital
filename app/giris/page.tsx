@@ -57,7 +57,9 @@ export default function LoginPage() {
       const supabase = getSupabase();
       if (!supabase) { setError("Supabase bağlantısı henüz yapılandırılmadı."); setLoading(false); return; }
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
-      if (authError) setError("E-posta veya şifre hatalı."); else { setMessage("Giriş başarılı."); window.location.href = "/ilan-ver/"; }
+      if (authError) setError("E-posta veya şifre hatalı."); else { setMessage("Giriş başarılı."); const requested = new URLSearchParams(location.search).get("next");
+        const target = new URL(requested || "/ilan-ver/", location.origin);
+        window.location.href = target.origin === location.origin && ["/ilanlar/","/ilan-detay/","/favorilerim/","/"].includes(target.pathname) ? target.href : "/ilan-ver/"; }
     }
     setLoading(false);
   };

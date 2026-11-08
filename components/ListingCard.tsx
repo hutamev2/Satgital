@@ -1,16 +1,17 @@
 import Link from "next/link";
-import { Heart, MapPin } from "lucide-react";
+import {FavoriteButton} from "./FavoriteButton";
+import { MapPin } from "lucide-react";
 import type { Listing } from "@/lib/data";
 
 export function ListingCard({ listing }: { listing: Listing }) {
   const href = listing.href ?? `/ilanlar/${listing.id}`;
   return (
     <article className="listing-card">
-      <Link href={href} className="listing-image-wrap">
+      <div className="listing-image-wrap"><Link href={href}>
         <img className="listing-image" src={listing.image} alt={listing.title} />
-        <button className="favorite-button" aria-label={`${listing.title} ilanını favorilere ekle`}><Heart size={19} /></button>
+        </Link>{listing.href && <FavoriteButton id={listing.id}/>}
         <span className="condition-badge">{listing.condition}</span>
-      </Link>
+      </div>
       <div className="listing-content">
         <p className="listing-category">{listing.category}</p>
         <Link href={href}><h3>{listing.title}</h3></Link>

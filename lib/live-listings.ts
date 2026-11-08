@@ -40,6 +40,7 @@ async function mapListing(row: ListingRow): Promise<Listing> {
   }
   return {
     id: row.id,
+    amount: Number(row.price),
     title: row.title,
     description: row.description,
     condition: row.condition,
