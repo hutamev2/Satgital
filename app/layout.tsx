@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Header } from "@/components/Header";
 import "./globals.css";
 
@@ -16,6 +16,12 @@ export const metadata: Metadata = {
     description: "İkinci el ürünleri kolayca keşfet, ücretsiz ilan ver.",
     images: [{ url: "/brand/satgital-logo-original.jpg", width: 1024, height: 1024, alt: "Satgital" }],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

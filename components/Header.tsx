@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
-import { Grid3X3, Heart, Menu, Plus, UserRound } from "lucide-react";
+import { Grid3X3, Heart, Menu, Plus, UserRound, X } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { AccountPanel } from "./AccountPanel";
 
@@ -11,6 +11,7 @@ export function Header() {
   const [authReady, setAuthReady] = useState(false);
   const [name, setName] = useState("Hesabım");
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [favoriteCount,setFavoriteCount]=useState(0);
 
   useEffect(() => {
@@ -60,9 +61,15 @@ export function Header() {
             : <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>
           )}
           <Link className="primary-button header-cta" href={authReady && !signedIn ? "/giris?reason=listing" : "/ilan-ver"}><Plus size={19} /> <span>Ücretsiz İlan Ver</span></Link>
-          <button className="mobile-menu" aria-label="Menüyü aç"><Menu /></button>
+          <button className="mobile-menu" aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>{menuOpen ? <X /> : <Menu />}</button>
         </div>
       </div>
+      {menuOpen && <nav className="mobile-nav" aria-label="Mobil menü">
+        <Link href="/ilanlar" onClick={() => setMenuOpen(false)}><Grid3X3 /> İlanları keşfet</Link>
+        <Link href="/favorilerim" onClick={() => setMenuOpen(false)}><Heart /> Favorilerim {favoriteCount > 0 && <span>{favoriteCount}</span>}</Link>
+        {!signedIn && <Link href="/giris" onClick={() => setMenuOpen(false)}><UserRound /> Giriş yap</Link>}
+        <Link href={authReady && !signedIn ? "/giris?reason=listing" : "/ilan-ver"} onClick={() => setMenuOpen(false)}><Plus /> Ücretsiz ilan ver</Link>
+      </nav>}
       {open && <AccountPanel name={name} onClose={() => setOpen(false)} />}
     </header>
   );
