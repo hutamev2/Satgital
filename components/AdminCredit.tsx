@@ -19,7 +19,12 @@ export function AdminCredit() {
       const request=sessionStorage.getItem(key) ?? crypto.randomUUID();
       sessionStorage.setItem(key, request);
       const {error}=await db.rpc("market_credit",{recipient,amount,request_id:request});
-      if(error) {setMessage(error.message);return;}
+      if(error) {
+        setMessage(error.code==="PGRST202"
+          ? "Bakiye servisi üretim veritabanında kurulu değil. restore_market_credit_rpc migration'ını uygulayın."
+          : error.message);
+        return;
+      }
       sessionStorage.removeItem(key);
       form.reset();
       setMessage("Bakiye eklendi.");
