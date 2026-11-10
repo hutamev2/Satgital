@@ -1,9 +1,9 @@
 "use client";
 
-import {AdminCredit} from "@/components/AdminCredit";
+import {AdminCredit, type CreditUser} from "@/components/AdminCredit";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { Archive, CheckCircle2, ImageOff, KeyRound, LayoutDashboard, LogOut, ShieldCheck, Trash2, Users } from "lucide-react";
+import { Archive, CheckCircle2, CircleDollarSign, ImageOff, KeyRound, LayoutDashboard, LogOut, ShieldCheck, ShoppingBag, Trash2, Users } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 
 type ListingStatus = "draft" | "published" | "sold" | "archived";
@@ -37,6 +37,7 @@ export default function AdminPage() {
   const [notice, setNotice] = useState("");
   const [listings, setListings] = useState<AdminListing[]>([]);
   const [userCount, setUserCount] = useState(0);
+  const [users,setUsers]=useState<CreditUser[]>([]);
 
   async function verifyAdmin() {
     const supabase = getSupabase();
@@ -54,7 +55,7 @@ export default function AdminPage() {
     try {
       const [listingResult, profileResult] = await Promise.all([
         supabase.from("listings").select("id,title,price,city,status,seller_display_name,created_at,listing_images(object_path,sort_order)").order("created_at", { ascending: false }),
-        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("profiles").select("id,display_name,phone", { count: "exact" }).order("display_name"),
       ]);
       if (listingResult.error) {
         setError(`İlanlar yüklenemedi: ${formatSupabaseError(listingResult.error, "Bilinmeyen veritabanı hatası")}`);
@@ -70,6 +71,7 @@ export default function AdminPage() {
       }));
       setListings(mapped);
       setUserCount(profileResult.error ? 0 : profileResult.count ?? 0);
+      setUsers(profileResult.error ? [] : (profileResult.data??[]) as CreditUser[]);
     } catch (dashboardError) {
       setError(formatSupabaseError(dashboardError, "Yönetim verileri yüklenemedi."));
     } finally { setLoading(false); }
@@ -145,11 +147,12 @@ export default function AdminPage() {
   const passiveCount = listings.filter((listing) => listing.status === "archived" || listing.status === "draft").length;
   const soldCount = listings.filter((listing) => listing.status === "sold").length;
 
-  return <main className="admin-page"><div className="container">
-    <header className="admin-header"><div><span className="section-kicker">Yönetim merkezi</span><h1>Admin Paneli</h1><p>Kullanıcıları ve ilan durumlarını güvenli biçimde yönet.</p></div><div><Link className="secondary-button" href="/"><LayoutDashboard/> Siteye dön</Link><button className="secondary-button" onClick={() => void logout()}><LogOut/> Çıkış</button></div></header>
+  return <main className="admin-page"><div className="container admin-shell">
+    <header className="admin-topbar"><Link href="/" className="brand"><img className="brand-logo" src="/brand/satgital-logo.png" width="859" height="216" alt="Satgital"/></Link><span><ShieldCheck/> Yönetici oturumu</span><div><Link className="secondary-button" href="/"><LayoutDashboard/> Siteye dön</Link><button className="admin-logout-button" onClick={() => void logout()}><LogOut/> Çıkış</button></div></header>
+    <section className="admin-hero"><div><span className="section-kicker">Yönetim merkezi</span><h1>Kontrol sende.</h1><p>Kullanıcı bakiyelerini, ilanları ve platform hareketlerini tek yerden yönet.</p></div><span className="admin-live-badge"><i/> Sistem aktif</span></section>
     {error && <p className="upload-error" role="alert">{error}</p>}{notice && <p className="form-note" role="status">{notice}</p>}
-    <AdminCredit/>
-    <section className="admin-stats"><article><Users/><span>Kullanıcılar</span><strong>{userCount}</strong></article><article><Archive/><span>Tüm ilanlar</span><strong>{listings.length}</strong></article><article><CheckCircle2/><span>Aktif</span><strong>{activeCount}</strong></article><article><Archive/><span>Pasif</span><strong>{passiveCount}</strong></article><article><CheckCircle2/><span>Satıldı</span><strong>{soldCount}</strong></article></section>
+    <section className="admin-stats"><article><span><Users/></span><div><small>Toplam kullanıcı</small><strong>{userCount}</strong></div></article><article><span><ShoppingBag/></span><div><small>Tüm ilanlar</small><strong>{listings.length}</strong></div></article><article><span><CheckCircle2/></span><div><small>Aktif ilan</small><strong>{activeCount}</strong></div></article><article><span><Archive/></span><div><small>Pasif ilan</small><strong>{passiveCount}</strong></div></article><article><span><CircleDollarSign/></span><div><small>Tamamlanan satış</small><strong>{soldCount}</strong></div></article></section>
+    <AdminCredit users={users}/>
     <section className="admin-listings"><div className="admin-section-title"><div><h2>İlan yönetimi</h2><p>Tüm ilanları incele, durumunu değiştir veya kaldır.</p></div><span>{loading ? "Yükleniyor..." : `${listings.length} ilan`}</span></div>
       {!loading && listings.length === 0 ? <div className="my-listings-empty"><ImageOff/><h2>Henüz ilan bulunmamaktadır.</h2></div> : <div className="admin-listing-grid">{listings.map((listing) => <article className="admin-listing-card" key={listing.id}><div className="admin-listing-image">{listing.imageUrl ? <img src={listing.imageUrl} alt={listing.title}/> : <ImageOff/>}<span className={`listing-status status-${listing.status}`}>{statusLabels[listing.status]}</span></div><div className="admin-listing-copy"><div><small>{listing.seller_display_name}</small><h3>{listing.title}</h3><p>{listing.city} · {new Intl.DateTimeFormat("tr-TR").format(new Date(listing.created_at))}</p></div><strong>{new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(Number(listing.price))}</strong><div className="admin-listing-actions"><label>Durum<select value={listing.status} disabled={busyId === listing.id} onChange={(event) => void updateStatus(listing, event.target.value as ListingStatus)}><option value="draft">Taslak</option><option value="published">Aktif</option><option value="archived">Pasif</option><option value="sold">Satıldı</option></select></label><button className="manage-button danger" disabled={busyId === listing.id} onClick={() => void deleteListing(listing)}><Trash2/> Sil</button></div></div></article>)}</div>}
     </section>
