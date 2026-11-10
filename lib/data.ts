@@ -10,6 +10,7 @@ export type Listing = {
   image: string;
   description: string;
   sellerName?: string;
+  sellerId?: string;
   href?: string;
 };
 

@@ -10,6 +10,7 @@ type ListingRow = {
   city: string;
   published_at: string | null;
   seller_display_name: string;
+  seller_id: string;
   categories: { name: string } | { name: string }[] | null;
   listing_images: { object_path: string; sort_order: number }[] | null;
 };
@@ -50,11 +51,12 @@ async function mapListing(row: ListingRow): Promise<Listing> {
     posted: postedAt(row.published_at),
     image,
     sellerName: row.seller_display_name,
+    sellerId: row.seller_id,
     href: `/ilan-detay/?id=${encodeURIComponent(row.id)}`,
   };
 }
 
-const listingSelect = "id,title,description,condition,price,city,published_at,seller_display_name,categories(name),listing_images(object_path,sort_order)";
+const listingSelect = "id,title,description,condition,price,city,published_at,seller_id,seller_display_name,categories(name),listing_images(object_path,sort_order)";
 
 export async function fetchPublishedListings() {
   const supabase = getSupabase();

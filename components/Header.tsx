@@ -11,6 +11,7 @@ export function Header() {
   const [authReady, setAuthReady] = useState(false);
   const [name, setName] = useState("Hesabım");
   const [open, setOpen] = useState(false);
+  const [favoriteCount,setFavoriteCount]=useState(0);
 
   useEffect(() => {
     const supabase = getSupabase();
@@ -28,6 +29,18 @@ export function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(()=>{
+    const supabase=getSupabase();
+    if(!supabase||!signedIn){setFavoriteCount(0);return;}
+    const load=async()=>{
+      const {count}=await supabase.from("favorites").select("listing_id",{count:"exact",head:true});
+      setFavoriteCount(count??0);
+    };
+    void load();
+    window.addEventListener("satgital:favorites-changed",load);
+    return()=>window.removeEventListener("satgital:favorites-changed",load);
+  },[signedIn]);
+
 
   return (
     <header className="site-header">
@@ -41,7 +54,7 @@ export function Header() {
           <Link href="/#nasil-calisir">Nasıl Çalışır?</Link>
         </nav>
         <div className="header-actions">
-          <Link className="icon-link desktop-only" href="/favorilerim" aria-label="Favorilerim"><Heart size={20} /></Link>
+          <Link className="icon-link favorite-header-link desktop-only" href="/favorilerim" aria-label={`Favorilerim${favoriteCount?` (${favoriteCount})`:""}`}><Heart size={20} />{favoriteCount>0&&<span>{favoriteCount>99?"99+":favoriteCount}</span>}</Link>
           {authReady && (signedIn
             ? <button className="login-link auth-button account-trigger" onClick={() => setOpen(true)} aria-haspopup="dialog"><UserRound size={20} /> {name}</button>
             : <Link className="login-link desktop-only" href="/giris"><UserRound size={20} /> Giriş Yap</Link>
