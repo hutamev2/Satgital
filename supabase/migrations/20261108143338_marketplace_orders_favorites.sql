@@ -140,3 +140,6 @@ create function public.market_transition(order_id uuid,action text) returns void
 create or replace function public.market_credit(recipient uuid,amount numeric,request_id uuid) returns void language sql security invoker set search_path='' as $$select private.market_credit(recipient,amount,request_id)$$;
 revoke all on function public.market_buy(uuid,numeric), private.market_buy(uuid,numeric), public.market_transition(uuid,text), private.market_transition(uuid,text), public.market_credit(uuid,numeric,uuid), private.market_credit(uuid,numeric,uuid) from public,anon,authenticated;
 grant execute on function public.market_buy(uuid,numeric), private.market_buy(uuid,numeric), public.market_transition(uuid,text), private.market_transition(uuid,text), public.market_credit(uuid,numeric,uuid), private.market_credit(uuid,numeric,uuid) to authenticated;
+
+-- Make newly created RPC signatures immediately visible to the Data API.
+notify pgrst, 'reload schema';
