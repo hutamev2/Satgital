@@ -53,7 +53,7 @@ end $$;
 create trigger favorite_sync after update of status,title,price on public.listings for each row execute function private.favorite_sync();
 revoke all on function private.favorite_sync(),private.favorite_snapshot() from public,anon,authenticated;
 
-create table private.balance_credits (
+create table if not exists private.balance_credits (
   request_id uuid primary key,
   admin_id uuid not null,
   recipient uuid not null references auth.users,
@@ -62,7 +62,7 @@ create table private.balance_credits (
 );
 revoke all on private.balance_credits from public, anon, authenticated;
 
-create function private.market_credit(recipient uuid, amount numeric, request_id uuid)
+create or replace function private.market_credit(recipient uuid, amount numeric, request_id uuid)
 returns void language plpgsql security definer set search_path = '' as $$
 begin
   if auth.uid() is null or not private.is_admin() then raise exception 'Yönetici yetkisi gerekli.'; end if;
@@ -137,6 +137,6 @@ create policy protect_order_images on public.listing_images as restrictive for d
 
 create function public.market_buy(item uuid, expected_price numeric) returns void language sql security invoker set search_path='' as $$select private.market_buy(item,expected_price)$$;
 create function public.market_transition(order_id uuid,action text) returns void language sql security invoker set search_path='' as $$select private.market_transition(order_id,action)$$;
-create function public.market_credit(recipient uuid,amount numeric,request_id uuid) returns void language sql security invoker set search_path='' as $$select private.market_credit(recipient,amount,request_id)$$;
+create or replace function public.market_credit(recipient uuid,amount numeric,request_id uuid) returns void language sql security invoker set search_path='' as $$select private.market_credit(recipient,amount,request_id)$$;
 revoke all on function public.market_buy(uuid,numeric), private.market_buy(uuid,numeric), public.market_transition(uuid,text), private.market_transition(uuid,text), public.market_credit(uuid,numeric,uuid), private.market_credit(uuid,numeric,uuid) from public,anon,authenticated;
 grant execute on function public.market_buy(uuid,numeric), private.market_buy(uuid,numeric), public.market_transition(uuid,text), private.market_transition(uuid,text), public.market_credit(uuid,numeric,uuid), private.market_credit(uuid,numeric,uuid) to authenticated;
