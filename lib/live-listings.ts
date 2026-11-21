@@ -58,12 +58,20 @@ async function mapListing(row: ListingRow): Promise<Listing> {
 
 const listingSelect = "id,title,description,condition,price,city,published_at,seller_id,seller_display_name,categories(name),listing_images(object_path,sort_order)";
 
-export async function fetchPublishedListings() {
+export async function fetchPublishedListings(limit?: number) {
   const supabase = getSupabase();
   if (!supabase) throw new Error("Supabase bağlantısı kurulamadı.");
-  const { data, error } = await supabase.from("listings").select(listingSelect).eq("status", "published").order("published_at", { ascending: false });
-  if (error) throw error;
-  return Promise.all(((data ?? []) as unknown as ListingRow[]).map(mapListing));
+  const rows: ListingRow[] = [];
+  const pageSize = Math.min(limit ?? 100, 100);
+  for (let offset = 0; ; offset += pageSize) {
+    const { data, error } = await supabase.from("listings").select(listingSelect)
+      .eq("status", "published").order("published_at", { ascending: false })
+      .order("id").range(offset, Math.min(offset + pageSize, limit ?? Infinity) - 1);
+    if (error) throw error;
+    rows.push(...(data as unknown as ListingRow[]));
+    if (data.length < pageSize || (limit !== undefined && rows.length >= limit)) break;
+  }
+  return Promise.all(Array.from(new Map(rows.map(row => [row.id, row])).values(), mapListing));
 }
 
 export async function fetchPublishedListing(id: string) {

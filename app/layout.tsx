@@ -33,8 +33,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <footer className="site-footer">
           <div className="container footer-grid">
             <div><div className="brand footer-brand"><img className="brand-logo" src="/brand/satgital-logo.png" width="859" height="216" alt="Satgital" /></div><p>İkinci elin modern, güvenli ve kolay buluşma noktası.</p></div>
-            <div><strong>Satgital</strong><LinkList items={["Hakkımızda", "Nasıl Çalışır?", "Güvenli Alışveriş"]} /></div>
-            <div><strong>Destek</strong><LinkList items={["Yardım Merkezi", "Kullanım Koşulları", "Gizlilik"]} /></div>
+            <div><strong>Satgital</strong><LinkList items={[[ "Hakkımızda", "/yardim/#hakkimizda"], ["Nasıl Çalışır?", "/#nasil-calisir"], ["Güvenli Alışveriş", "/yardim/#alisveris"], ["Fiyat karşılaştır", "/fiyat-karsilastir/"]]} /></div>
+            <div><strong>Destek</strong><LinkList items={[["Yardım Merkezi", "/yardim/"], ["Kullanım Koşulları", "/yardim/#kullanim"], ["Gizlilik", "/yardim/#gizlilik"]]} /></div>
           </div>
           <div className="container footer-bottom">© 2026 Satgital. Tasarım prototipi.</div>
         </footer>
@@ -43,6 +43,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   );
 }
 
-function LinkList({ items }: { items: string[] }) {
-  return <ul>{items.map((item) => <li key={item}><a href="#">{item}</a></li>)}</ul>;
+function LinkList({ items }: { items: [string, string][] }) {
+  return <ul>{items.map(([item, href]) => <li key={item}><a href={href}>{item}</a></li>)}</ul>;
 }

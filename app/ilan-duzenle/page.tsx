@@ -1,5 +1,7 @@
 "use client";
 
+import { cities } from "@/lib/cities";
+
 import Link from "next/link";
 import { type FormEvent, useEffect, useState } from "react";
 import { ArrowLeft, Camera, Check, ImagePlus, X } from "lucide-react";
@@ -19,7 +21,7 @@ type ListingForm = {
   city: string;
 };
 
-const cities = ["İstanbul", "Ankara", "İzmir", "Bursa", "Antalya"];
+
 
 export default function EditListingPage() {
   const [listing, setListing] = useState<ListingForm | null>(null);
@@ -129,7 +131,7 @@ export default function EditListingPage() {
     <div className="page-intro"><span className="section-kicker">İlan yönetimi</span><h1>İlanı düzenle</h1><p>İlan bilgilerini ve fotoğraflarını güncelle.</p></div>
     <form className="sell-form" onSubmit={save}>
       <section className="form-section"><div className="form-section-title"><span><Camera/></span><div><h2>Ürün fotoğrafları</h2><p>{existingImages.length + newImages.length}/8 fotoğraf</p></div></div><div className="upload-preview-grid">{existingImages.map((image, index) => <div className="upload-preview" key={image.id}>{image.url ? <img src={image.url} alt={`İlan fotoğrafı ${index + 1}`}/> : null}{index === 0 && <span>Kapak</span>}<button type="button" aria-label="Fotoğrafı kaldır" onClick={() => removeExisting(image)}><X/></button></div>)}{newImages.map((image) => <div className="upload-preview" key={image.id}><img src={image.url} alt={image.file.name}/><button type="button" aria-label="Yeni fotoğrafı kaldır" onClick={() => setNewImages((current) => current.filter((item) => item.id !== image.id))}><X/></button></div>)}</div>{existingImages.length + newImages.length < 8 && <label className="upload-box compact"><ImagePlus/><strong>Fotoğraf ekle</strong><small>PNG, JPG veya WEBP · En fazla 10 MB</small><input type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(event) => { addImages(event.target.files); event.target.value = ""; }}/></label>}</section>
-      <section className="form-section"><div className="form-grid"><label className="full-field">Kategori<select name="category_id" required defaultValue={String(listing.category_id)}>{categories.map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}</select></label><label className="full-field">İlan başlığı<input name="title" required minLength={10} maxLength={80} defaultValue={listing.title}/></label><label>Ürün durumu<select name="condition" required defaultValue={listing.condition}><option>Yeni gibi</option><option>Çok iyi</option><option>İyi</option><option>Kullanılmış</option></select></label><label>Garanti durumu<select name="warranty" required defaultValue={listing.warranty}><option>Devam ediyor</option><option>Bitti</option><option>Yok</option></select></label><label className="full-field">Açıklama<textarea name="description" required minLength={20} maxLength={5000} rows={6} defaultValue={listing.description}/></label><label>Fiyat<div className="input-suffix"><input name="price" required min="1" step="0.01" type="number" defaultValue={Number(listing.price)}/><span>TL</span></div></label><label>Şehir<select name="city" required defaultValue={listing.city}>{cities.map((city) => <option key={city}>{city}</option>)}</select></label></div></section>
+      <section className="form-section"><div className="form-grid"><label className="full-field">Kategori<select name="category_id" required defaultValue={String(listing.category_id)}>{categories.map((category) => <option value={category.id} key={category.id}>{category.name}</option>)}</select></label><label className="full-field">İlan başlığı<input name="title" required minLength={10} maxLength={80} defaultValue={listing.title}/></label><label>Ürün durumu<select name="condition" required defaultValue={listing.condition}><option>Yeni gibi</option><option>Çok iyi</option><option>İyi</option><option>Kullanılmış</option></select></label><label>Garanti durumu<select name="warranty" required defaultValue={listing.warranty}><option>Devam ediyor</option><option>Bitti</option><option>Yok</option></select></label><label className="full-field">Açıklama<textarea name="description" required minLength={20} maxLength={5000} rows={6} defaultValue={listing.description}/></label><label>Fiyat<div className="input-suffix"><input name="price" required min="1" step="0.01" type="number" defaultValue={Number(listing.price)}/><span>TL</span></div></label><label>Şehir<select name="city" required defaultValue={listing.city}>{(cities.includes(listing.city) ? cities : [listing.city, ...cities]).map((city) => <option key={city}>{city}</option>)}</select></label></div></section>
       {notice && <p className={notice.includes("güncellendi") ? "form-note" : "upload-error"} role="status">{notice}</p>}
       <button className="primary-button form-submit" disabled={saving} type="submit">{saving ? "Kaydediliyor..." : <><Check/> Değişiklikleri kaydet</>}</button>
     </form>

@@ -31,7 +31,7 @@ export default function LiveListingDetail() {
           <hr /><h2>Açıklama</h2><p>{listing.description}</p>
           <div className="spec-grid"><div><span>Ürün durumu</span><strong>{listing.condition}</strong></div><div><span>Kategori</span><strong>{listing.category}</strong></div><div><span>Teslimat</span><strong>Elden teslim</strong></div></div>
         </div>
-      </section><aside className="seller-card"><span className="detail-price">{listing.price}</span><div className="seller-profile"><div className="seller-avatar"><UserRound /></div><div><strong>{listing.sellerName ?? "Satgital Kullanıcısı"}</strong><span>Doğrulanmış ilan</span></div></div><BuyButton listing={listing}/><button className="primary-button full-button"><MessageCircle size={19} /> Satıcıya mesaj gönder</button><div className="safe-note"><ShieldCheck /><p><strong>Güvenli alışveriş</strong>Kapora göndermeden önce ürünü ve satıcıyı doğrula.</p></div></aside></div>
+      </section><aside className="seller-card"><span className="detail-price">{listing.price}</span><div className="seller-profile"><div className="seller-avatar"><UserRound /></div><div><strong>{listing.sellerName ?? "Satgital Kullanıcısı"}</strong><span>Doğrulanmış ilan</span></div></div><BuyButton listing={listing}/><Link className="primary-button full-button" href={`/mesajlar/?ilan=${encodeURIComponent(listing.id)}`}><MessageCircle size={19} /> Satıcıya mesaj gönder</Link><div className="safe-note"><ShieldCheck /><p><strong>Güvenli alışveriş</strong>Kapora göndermeden önce ürünü ve satıcıyı doğrula.</p></div></aside></div>
     </div></main>
   );
 }

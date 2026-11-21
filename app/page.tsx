@@ -1,12 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, Bike, BookOpen, Car, Dumbbell, Grid3X3, Laptop, Search, ShieldCheck, Shirt, Smartphone, Sofa, Sparkles, UsersRound, Zap } from "lucide-react";
-import { ListingCard } from "@/components/ListingCard";
-import { listings } from "@/lib/data";
+import { ArrowRight, Grid3X3, Search, ShieldCheck, Sparkles, UsersRound, Zap } from "lucide-react";
 
-const categoryItems = [
-  [Sofa, "Mobilya & Ev"], [Laptop, "Elektronik"], [Smartphone, "Telefon"], [Shirt, "Giyim"],
-  [BookOpen, "Kitap & Hobi"], [Dumbbell, "Spor & Outdoor"], [Bike, "Bisiklet"], [Car, "Otomotiv"],
-];
+import { categoryTree } from "@/lib/market-categories";
+import { RecentListings } from "@/components/RecentListings";
 
 export default function Home() {
   return (
@@ -24,7 +20,7 @@ export default function Home() {
               <input name="q" aria-label="Ürün ara" placeholder="Ne aramıştın?" />
               <button type="submit">Ara</button>
             </form>
-            <div className="popular-searches"><span>Popüler:</span><a href="/ilanlar">Telefon</a><a href="/ilanlar">Koltuk</a><a href="/ilanlar">Bisiklet</a></div>
+            <div className="popular-searches"><span>Popüler:</span><a href="/ilanlar/?q=Telefon">Telefon</a><a href="/ilanlar/?q=Koltuk">Koltuk</a><a href="/ilanlar/?q=Bisiklet">Bisiklet</a></div>
           </div>
           <div className="hero-visual" aria-label="İkinci el ürünler">
             <div className="hero-image-main"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=90" alt="Modern gri koltuk" /></div>
@@ -37,15 +33,15 @@ export default function Home() {
       <section className="category-section container" aria-labelledby="categories-title">
         <div className="section-heading"><div><span className="section-kicker">Keşfet</span><h2 id="categories-title">Kategorilere göz at</h2></div><Link href="/ilanlar">Tüm kategoriler <ArrowRight size={17} /></Link></div>
         <div className="category-grid">
-          {categoryItems.map(([Icon, label]) => <Link className="category-card" href="/ilanlar" key={label as string}><span><Icon size={25} /></span>{label as string}</Link>)}
+          {categoryTree.map(({ icon: Icon, label }) => <Link className="category-card" href={`/ilanlar/?category=${encodeURIComponent(label)}`} key={label}><span><Icon size={25} /></span>{label}</Link>)}
           <Link className="category-card category-all" href="/ilanlar"><span><Grid3X3 size={25} /></span>Tümü</Link>
         </div>
       </section>
 
       <section className="listings-section">
         <div className="container">
-          <div className="section-heading"><div><span className="section-kicker">Yeni eklenenler</span><h2>Kaçırılmayacak ilanlar</h2></div><Link href="/ilanlar">Tüm ilanları gör <ArrowRight size={17} /></Link></div>
-          <div className="listing-grid">{listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}</div>
+          <div className="section-heading"><div><span className="section-kicker">Yeni eklenenler</span><h2>Son ilanlar</h2></div><Link href="/ilanlar">Tüm ilanları gör <ArrowRight size={17} /></Link></div>
+          <RecentListings />
         </div>
       </section>
 

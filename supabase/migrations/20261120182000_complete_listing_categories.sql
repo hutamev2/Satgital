@@ -1,0 +1,35 @@
+insert into public.categories (parent_id, name, slug, sort_order)
+select p.id, c.name, c.slug, c.sort_order from (values
+  ('Cep Telefonu', 'Yenilenmiş Cep Telefonu', 'yenilenmis-cep-telefonu', 10),
+  ('Cep Telefonu', 'Yurt Dışı Cep Telefonu', 'yurt-disi-cep-telefonu', 20),
+  ('Cep Telefonu', 'İkinci El Cep Telefonu', 'ikinci-el-cep-telefonu', 30),
+  ('Cep Telefonu', 'Tuşlu Telefon', 'tuslu-telefon', 40),
+  ('Cep Telefonu', 'Cep Telefonu Aksesuarları', 'cep-telefonu-aksesuarlari', 50),
+  ('Bilgisayar', 'Dizüstü Bilgisayar', 'dizustu-bilgisayar', 10),
+  ('Bilgisayar', 'Masaüstü Bilgisayar', 'masaustu-bilgisayar', 20),
+  ('Bilgisayar', 'Tablet', 'tablet', 30),
+  ('Bilgisayar', 'Monitör', 'monitor', 40),
+  ('Bilgisayar', 'Bilgisayar Bileşenleri', 'bilgisayar-bilesenleri', 50),
+  ('Ev & Yaşam', 'Koltuk & Oturma Grubu', 'koltuk-oturma-grubu', 10),
+  ('Ev & Yaşam', 'Masa & Sandalye', 'masa-sandalye', 20),
+  ('Ev & Yaşam', 'Dolap & Kitaplık', 'dolap-kitaplik', 30),
+  ('Ev & Yaşam', 'Beyaz Eşya', 'beyaz-esya', 40),
+  ('Ev & Yaşam', 'Ev Dekorasyonu', 'ev-dekorasyonu', 50),
+  ('Giyim', 'Kadın Giyim', 'kadin-giyim', 10),
+  ('Giyim', 'Erkek Giyim', 'erkek-giyim', 20),
+  ('Giyim', 'Ayakkabı', 'ayakkabi', 30),
+  ('Giyim', 'Çanta', 'canta', 40),
+  ('Giyim', 'Saat & Aksesuar', 'saat-aksesuar', 50),
+  ('Otomotiv', 'Otomobil', 'otomobil', 10),
+  ('Otomotiv', 'Motosiklet', 'motosiklet', 20),
+  ('Otomotiv', 'Jant & Lastik', 'jant-lastik', 30),
+  ('Otomotiv', 'Oto Ses & Görüntü', 'oto-ses-goruntu', 40),
+  ('Otomotiv', 'Yedek Parça', 'yedek-parca', 50),
+  ('Oyun & Hobi', 'Oyun Konsolu', 'oyun-konsolu', 10),
+  ('Oyun & Hobi', 'Konsol Oyunları', 'konsol-oyunlari', 20),
+  ('Oyun & Hobi', 'Oyuncu Ekipmanları', 'oyuncu-ekipmanlari', 30),
+  ('Oyun & Hobi', 'Koleksiyon', 'koleksiyon', 40),
+  ('Oyun & Hobi', 'Müzik Aletleri', 'muzik-aletleri', 50)
+) as c(parent_name,name,slug,sort_order)
+join public.categories p on p.name=c.parent_name and p.parent_id is null
+on conflict (parent_id,name) do nothing;

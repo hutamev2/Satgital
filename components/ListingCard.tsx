@@ -4,7 +4,7 @@ import { MapPin } from "lucide-react";
 import type { Listing } from "@/lib/data";
 
 export function ListingCard({ listing }: { listing: Listing }) {
-  const href = listing.href ?? `/ilanlar/${listing.id}`;
+  const href = listing.href;
   return (
     <article className="listing-card">
       <div className="listing-image-wrap"><Link href={href}>
