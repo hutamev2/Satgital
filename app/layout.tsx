@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Header } from "@/components/Header";
 import "./globals.css";
+import "./redesign.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://satgital.com.tr"),

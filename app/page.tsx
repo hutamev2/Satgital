@@ -1,66 +1,81 @@
 import Link from "next/link";
-import { ArrowRight, Grid3X3, Search, ShieldCheck, Sparkles, UsersRound, Zap } from "lucide-react";
+import { BadgeCheck, Camera, FileText, Grid3X3, Search, ShieldCheck, Sparkles } from "lucide-react";
 
-import { categoryTree } from "@/lib/market-categories";
 import { RecentListings } from "@/components/RecentListings";
+import { categoryTree } from "@/lib/market-categories";
+
+const steps = [
+  { icon: Camera, title: "Fotoğrafları ekle", copy: "Ürününü net fotoğraflarla göster." },
+  { icon: FileText, title: "Detayları tamamla", copy: "Durumunu, açıklamasını ve fiyatını yaz." },
+  { icon: BadgeCheck, title: "İlanını yayınla", copy: "Önizle ve birkaç dakika içinde yayına al." },
+];
 
 export default function Home() {
   return (
     <main>
-      <section className="hero">
-        <div className="hero-orb hero-orb-one" />
-        <div className="hero-orb hero-orb-two" />
-        <div className="container hero-grid">
-          <div className="hero-copy">
-            <span className="eyebrow"><Sparkles size={16} /> Yeniden değerlendir</span>
-            <h1>Aradığın ikinci şans <em>burada.</em></h1>
-            <p>İyi ürünler yeni sahipleriyle buluşsun. Kolayca keşfet, güvenle iletişim kur, ücretsiz ilan ver.</p>
-            <form className="hero-search" action="/ilanlar">
-              <Search size={22} />
-              <input name="q" aria-label="Ürün ara" placeholder="Ne aramıştın?" />
-              <button type="submit">Ara</button>
+      <section className="home-hero">
+        <div className="container home-hero-grid">
+          <div className="home-hero-copy">
+            <span className="hero-kicker"><Sparkles size={17} /> İkinci elin yeni adresi</span>
+            <h1>Aradığını kolayca bul, kullanmadığını hızla sat.</h1>
+            <p>Binlerce ilan arasında ara, filtrele ve doğrudan satıcıyla iletişime geç.</p>
+            <form className="home-search" action="/ilanlar/">
+              <Search aria-hidden="true" />
+              <input name="q" aria-label="İlanlarda ara" placeholder="Telefon, bisiklet, koltuk ara" />
+              <button type="submit">İlan ara</button>
             </form>
-            <div className="popular-searches"><span>Popüler:</span><a href="/ilanlar/?q=Telefon">Telefon</a><a href="/ilanlar/?q=Koltuk">Koltuk</a><a href="/ilanlar/?q=Bisiklet">Bisiklet</a></div>
+            <div className="quick-searches" aria-label="Popüler aramalar">
+              <span>Popüler</span>
+              {['Telefon', 'Bilgisayar', 'Koltuk', 'Otomobil'].map((term) => (
+                <Link key={term} href={`/ilanlar/?q=${encodeURIComponent(term)}`}>{term}</Link>
+              ))}
+            </div>
           </div>
-          <div className="hero-visual" aria-label="İkinci el ürünler">
-            <div className="hero-image-main"><img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=90" alt="Modern gri koltuk" /></div>
-            <div className="floating-card floating-camera"><img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=400&q=85" alt="Fotoğraf makinesi" /><span><strong>Yeni ilan</strong>Fotoğraf makinesi</span></div>
-            <div className="floating-card floating-trust"><ShieldCheck /><span><strong>Güvenli iletişim</strong>Kontrol sende</span></div>
-          </div>
+
+          <aside className="hero-discovery" aria-label="Hızlı keşif">
+            <div className="hero-discovery-head"><span>Hızlı keşif</span><Link href="/ilanlar/">Tüm ilanlar</Link></div>
+            <div className="hero-category-list">
+              {categoryTree.slice(0, 4).map(({ icon: Icon, label, description }) => (
+                <Link key={label} href={`/ilanlar/?category=${encodeURIComponent(label)}`}>
+                  <span><Icon /></span><div><strong>{label}</strong><small>{description}</small></div>
+                </Link>
+              ))}
+            </div>
+            <div className="hero-trust"><ShieldCheck /><span><strong>Güvenli iletişim</strong>Satıcı profili ve ilan geçmişi elinin altında.</span></div>
+          </aside>
         </div>
       </section>
 
-      <section className="category-section container" aria-labelledby="categories-title">
-        <div className="section-heading"><div><span className="section-kicker">Keşfet</span><h2 id="categories-title">Kategorilere göz at</h2></div><Link href="/ilanlar">Tüm kategoriler <ArrowRight size={17} /></Link></div>
-        <div className="category-grid">
-          {categoryTree.map(({ icon: Icon, label }) => <Link className="category-card" href={`/ilanlar/?category=${encodeURIComponent(label)}`} key={label}><span><Icon size={25} /></span>{label}</Link>)}
-          <Link className="category-card category-all" href="/ilanlar"><span><Grid3X3 size={25} /></span>Tümü</Link>
+      <section className="home-section container" aria-labelledby="categories-title">
+        <div className="home-section-head">
+          <div><span>Kategoriler</span><h2 id="categories-title">Neye ihtiyacın var?</h2></div>
+          <Link href="/ilanlar/">Tümünü keşfet</Link>
+        </div>
+        <div className="home-category-grid">
+          {categoryTree.map(({ icon: Icon, label, description }) => (
+            <Link href={`/ilanlar/?category=${encodeURIComponent(label)}`} key={label}>
+              <span><Icon /></span><div><strong>{label}</strong><small>{description}</small></div>
+            </Link>
+          ))}
+          <Link className="all-categories" href="/ilanlar/"><span><Grid3X3 /></span><div><strong>Tüm ilanlar</strong><small>Her kategoriyi görüntüle</small></div></Link>
         </div>
       </section>
 
-      <section className="listings-section">
+      <section className="home-listings">
         <div className="container">
-          <div className="section-heading"><div><span className="section-kicker">Yeni eklenenler</span><h2>Son ilanlar</h2></div><Link href="/ilanlar">Tüm ilanları gör <ArrowRight size={17} /></Link></div>
+          <div className="home-section-head"><div><span>Yeni eklenenler</span><h2>Son ilanlar</h2></div><Link href="/ilanlar/">Tüm ilanları gör</Link></div>
           <RecentListings />
         </div>
       </section>
 
-      <section id="nasil-calisir" className="container steps-section">
-        <div className="steps-copy"><span className="section-kicker">Basit ve hızlı</span><h2>Satmak üç adım kadar kolay</h2><p>Kullanmadığın ürünleri birkaç dakikada yeni sahibiyle buluştur.</p><Link className="primary-button" href="/ilan-ver">İlan vermeye başla <ArrowRight size={18} /></Link></div>
-        <div className="steps-list">
-          <div><span>01</span><section><h3>Fotoğrafları ekle</h3><p>Ürününü farklı açılardan gösteren net fotoğraflar yükle.</p></section></div>
-          <div><span>02</span><section><h3>Bilgileri tamamla</h3><p>Ürün durumunu, açıklamasını ve fiyatını belirle.</p></section></div>
-          <div><span>03</span><section><h3>İlanını yayınla</h3><p>Kontrol ettikten sonra ilanını ücretsiz yayınla.</p></section></div>
+      <section id="nasil-calisir" className="home-section container how-it-works">
+        <div className="how-copy"><span>Kolayca ilan ver</span><h2>Ürününü bugün yeni sahibiyle buluştur.</h2><p>Fotoğrafları ekle, bilgileri tamamla ve ilanını ücretsiz yayınla.</p><Link className="primary-button" href="/ilan-ver/">Ücretsiz ilan ver</Link></div>
+        <div className="how-steps">
+          {steps.map(({ icon: Icon, title, copy }) => <article key={title}><span><Icon /></span><div><h3>{title}</h3><p>{copy}</p></div></article>)}
         </div>
       </section>
 
-      <section className="trust-band">
-        <div className="container trust-grid">
-          <div><ShieldCheck /><span><strong>Güvenli alışveriş</strong>Kontrollü iletişim</span></div>
-          <div><Zap /><span><strong>Hızlı ve pratik</strong>Dakikalar içinde ilan</span></div>
-          <div><UsersRound /><span><strong>Herkes için kolay</strong>Sade ve anlaşılır deneyim</span></div>
-        </div>
-      </section>
+      <section className="home-confidence"><div className="container"><ShieldCheck /><div><strong>Daha güvenli alışveriş için</strong><span>Ürünü görmeden ödeme yapma, ilan detaylarını kontrol et ve konuşmaları platform içinde tut.</span></div><Link href="/yardim/#alisveris">Güvenlik ipuçları</Link></div></section>
     </main>
   );
 }

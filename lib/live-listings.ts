@@ -50,6 +50,7 @@ async function mapListing(row: ListingRow): Promise<Listing> {
     category: categoryName(row.categories),
     posted: postedAt(row.published_at),
     image,
+    publishedAt: row.published_at,
     sellerName: row.seller_display_name,
     sellerId: row.seller_id,
     href: `/ilan-detay/?id=${encodeURIComponent(row.id)}`,
@@ -79,5 +80,12 @@ export async function fetchPublishedListing(id: string) {
   if (!supabase) throw new Error("Supabase bağlantısı kurulamadı.");
   const { data, error } = await supabase.from("listings").select(listingSelect).eq("id", id).eq("status", "published").single();
   if (error) throw error;
-  return mapListing(data as unknown as ListingRow);
+  const row = data as unknown as ListingRow;
+  const listing = await mapListing(row);
+  const paths = [...(row.listing_images ?? [])].sort((a,b) => a.sort_order-b.sort_order).map(image => image.object_path);
+  if (paths.length) {
+    const { data: urls } = await supabase.storage.from("listing-images").createSignedUrls(paths,3600);
+    listing.images = urls?.flatMap(url => url.signedUrl ? [url.signedUrl] : []);
+  }
+  return listing;
 }
