@@ -31,6 +31,7 @@ export default function SellPage() {
   const [publishError, setPublishError] = useState("");
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState("");
+  const [previewPhoto, setPreviewPhoto] = useState(0);
   const [preview, setPreview] = useState<FormData>();
   const publishLock = useRef(false);
 
@@ -80,6 +81,7 @@ export default function SellPage() {
     if (publishLock.current || published) return;
     if (!images.length) { setPublishError("En az bir ürün fotoğrafı eklemelisin."); return; }
     if (activeStep === 1) {
+      setPreviewPhoto(0);
       setPreview(values);
       setActiveStep(2);
       return;
@@ -169,7 +171,14 @@ export default function SellPage() {
             <section className="form-section"><div className="form-section-title"><span>1</span><div><h2>İlan detayları</h2><p>Alıcıların ürününü doğru değerlendirmesine yardımcı ol.</p></div></div><div className="form-grid"><label className="full-field">İlan başlığı<input name="title" required minLength={10} placeholder="Örn. Kutulu, çok temiz iPhone 14" maxLength={80} /><small>10–80 karakter</small></label><label>Ürün durumu<select name="condition" required defaultValue=""><option value="" disabled>Durum seç</option><option>Yeni gibi</option><option>Çok iyi</option><option>İyi</option><option>Kullanılmış</option></select></label><label>Garanti durumu<select name="warranty" required defaultValue=""><option value="" disabled>Garanti seç</option><option>Devam ediyor</option><option>Bitti</option><option>Yok</option></select></label><label className="full-field">Açıklama<textarea name="description" required minLength={20} maxLength={5000} placeholder="Ürünün durumunu, kullanım süresini ve varsa kusurlarını açıkça yaz." rows={6} /></label></div></section>
             <section className="form-section"><div className="form-section-title"><span>2</span><div><h2>Fiyat ve konum</h2><p>İlanının son bilgilerini tamamla.</p></div></div><div className="form-grid"><label>Fiyat<div className="input-suffix"><input name="price" required min="1" step="0.01" type="number" placeholder="0" /><span>TL</span></div></label><label>Şehir<select name="city" required defaultValue=""><option value="" disabled>Şehir seç</option>{cities.map(city => <option key={city}>{city}</option>)}</select></label></div><div className="form-note"><Info /><span>Doğru fiyat ve açık bilgiler ilanının daha hızlı sonuçlanmasına yardımcı olur.</span></div></section>
             </div></div>
-            {activeStep === 2 && preview && !published && <section className="form-section"><h2>{String(preview.get("title"))}</h2><div className="upload-preview-grid">{images.map(image => <div className="upload-preview" key={image.id}><img src={image.url} alt={image.name} /></div>)}</div><strong>{Number(preview.get("price")).toLocaleString("tr-TR")} TL</strong><p>{[selectedCategory, preview.get("condition"), preview.get("city")].join(" · ")}</p><p>Garanti: {String(preview.get("warranty"))}</p><p style={{whiteSpace:"pre-wrap"}}>{String(preview.get("description"))}</p><button type="button" className="secondary-button" disabled={publishing} onClick={() => setActiveStep(1)}>Bilgileri düzenle</button></section>}
+            {activeStep === 2 && preview && !published && <section className="listing-preview">
+              <div className="preview-gallery"><img className="preview-cover" src={images[previewPhoto]?.url} alt={String(preview.get("title"))} />
+                {images.length > 1 && <div className="preview-thumbs">{images.map((image,index) => <button key={image.id} type="button" aria-pressed={previewPhoto === index} aria-label={`${index + 1}. fotoğrafı göster`} onClick={() => setPreviewPhoto(index)}><img src={image.url} alt="" /></button>)}</div>}
+              </div>
+              <div className="preview-info"><small>{activeMain.label} / {selectedCategory}</small><h2>{String(preview.get("title"))}</h2><strong className="preview-price">{Number(preview.get("price")).toLocaleString("tr-TR")} TL</strong>
+                <dl>{[["Konum","city"],["Ürün durumu","condition"],["Garanti","warranty"]].map(([label,key]) => <div key={key}><dt>{label}</dt><dd>{String(preview.get(key))}</dd></div>)}</dl>
+                <h3>Açıklama</h3><p>{String(preview.get("description"))}</p><button type="button" className="secondary-button" disabled={publishing} onClick={() => setActiveStep(1)}>Bilgileri düzenle</button>
+              </div></section>}
             {publishError && <p className="upload-error" role="alert">{publishError} {publishError.includes("giriş") && <Link href="/giris">Giriş sayfasına git</Link>}</p>}
             {published ? <div className="selected-category-bar"><div><Check /><span><small>İşlem tamamlandı</small><strong>İlanın başarıyla yayınlandı.</strong></span></div><Link href={`/ilan-detay/?id=${encodeURIComponent(published)}`}>İlanımı gör</Link></div> : <button type="submit" className="primary-button form-submit" disabled={publishing}>{publishing ? "Yayınlanıyor..." : activeStep === 1 ? "İlanı önizle" : "İlanı yayınla"} <ChevronRight /></button>}
           </form>

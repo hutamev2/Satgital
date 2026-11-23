@@ -4,10 +4,13 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { Grid3X3, Heart, MessageCircle, Menu, Plus, UserRound, X } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
+import { useMessageNotifications } from "@/lib/use-message-notifications";
 import { AccountPanel } from "./AccountPanel";
 
 export function Header() {
   const [signedIn, setSignedIn] = useState(false);
+  const [userId, setUserId] = useState("");
+  const unread = useMessageNotifications(userId);
   const [authReady, setAuthReady] = useState(false);
   const [name, setName] = useState("Hesabım");
   const [open, setOpen] = useState(false);
@@ -22,6 +25,7 @@ export function Header() {
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user.id ?? "");
       setSignedIn(Boolean(session?.user));
       setName(session?.user.user_metadata.full_name || "Hesabım");
       setAuthReady(true);
@@ -55,7 +59,7 @@ export function Header() {
           <Link href="/#nasil-calisir">Nasıl Çalışır?</Link>
         </nav>
         <div className="header-actions">
-          {signedIn && <Link className="icon-link desktop-only" href="/mesajlar/" aria-label="Mesajlarım"><MessageCircle size={20} /></Link>}
+          {signedIn && <Link className="icon-link chat-indicator" href="/mesajlar/" aria-label={`Mesajlarım, ${unread} okunmamış`}><MessageCircle size={20} />{unread > 0 && <b>{unread > 99 ? "99+" : unread}</b>}</Link>}
           <Link className="icon-link favorite-header-link desktop-only" href="/favorilerim" aria-label={`Favorilerim${favoriteCount?` (${favoriteCount})`:""}`}><Heart size={20} />{favoriteCount>0&&<span>{favoriteCount>99?"99+":favoriteCount}</span>}</Link>
           {authReady && (signedIn
             ? <button className="login-link auth-button account-trigger" onClick={() => setOpen(true)} aria-haspopup="dialog"><UserRound size={20} /> {name}</button>
@@ -67,7 +71,7 @@ export function Header() {
       </div>
       {menuOpen && <nav className="mobile-nav" aria-label="Mobil menü">
         <Link href="/ilanlar" onClick={() => setMenuOpen(false)}><Grid3X3 /> İlanları keşfet</Link>
-        {signedIn && <Link href="/mesajlar/" onClick={() => setMenuOpen(false)}><MessageCircle /> Mesajlarım</Link>}
+        {signedIn && <Link href="/mesajlar/" onClick={() => setMenuOpen(false)}><MessageCircle /> Mesajlarım {unread > 0 && <span>{unread}</span>}</Link>}
         <Link href="/favorilerim" onClick={() => setMenuOpen(false)}><Heart /> Favorilerim {favoriteCount > 0 && <span>{favoriteCount}</span>}</Link>
         {!signedIn && <Link href="/giris" onClick={() => setMenuOpen(false)}><UserRound /> Giriş yap</Link>}
         <Link href={authReady && !signedIn ? "/giris?reason=listing" : "/ilan-ver"} onClick={() => setMenuOpen(false)}><Plus /> Ücretsiz ilan ver</Link>
